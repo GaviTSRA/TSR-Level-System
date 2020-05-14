@@ -13,14 +13,16 @@ module.exports =
             {
                 "level": data.level,
                 "XP": data.XP + count,
-                "XPNeeded": data.XPNeeded - 1
+                "XPNeeded": data.XPNeeded - 1,
+                "Gift": data.Gift
             };
         } else {
             data2 = 
             {
                 "level": 1,
                 "XP": 1,
-                "XPNeeded": 9
+                "XPNeeded": 9,
+                "Gift": false
             }
         }
         let saveData = JSON.stringify(data2);

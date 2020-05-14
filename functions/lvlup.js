@@ -14,7 +14,8 @@ module.exports =
         {
             "level": newLevel,
             "XP": level.XP,
-            "XPNeeded": newXPNeeded
+            "XPNeeded": newXPNeeded,
+            "Gift": level.Gift
         };
 
         let data = JSON.stringify(levelSave);

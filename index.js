@@ -24,6 +24,12 @@ bot.on("ready", () => {
     bot.user.setPresence({activity: { name: "Discord", type: "PLAYING" }, status: "online"}); 
 });
 
+update = setInterval(UPDATE, 60);
+function UPDATE()
+{
+    if (new Date().getHours() == 0 && new Date().getMinutes() == 0 && new Date().getSeconds() == 0 && new Date().getMilliseconds() == 0) bot.commands.get("gift").reset();
+}
+
 bot.on("message", message => {
     
     bot.functions.get("addXP").execute(message, 1);
@@ -41,6 +47,14 @@ bot.on("message", message => {
         {
             case 'stats':
                 bot.commands.get("stats").execute(message, args)
+            break;
+
+            case 'gift':
+                if(data.level < 10) message.channel.send("You need to be level 10 for this!"); else bot.commands.get("gift").execute(message);
+            break;
+            
+            case 'reset':
+                bot.commands.get("gift").reset(message);
             break;
         }
     }
