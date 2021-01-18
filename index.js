@@ -22,15 +22,15 @@ function UPDATE()
     if (new Date().getHours() == 0 && new Date().getMinutes() == 0 && new Date().getSeconds() == 0 && new Date().getMilliseconds() == 0) return;
 }
 
-const editDB = async (message, query) =>
+const editDB = async (message, query, username) =>
 {
     try { await pool.query(query); }
     catch(e) { message.channel.send("Something went wrong (editDB): \nQuery: " + query + "\n" + e); }
 }
 
-const printStats = async (message) =>
+const printStats = async (message, username) =>
 {
-    query = "SELECT * FROM levelsystem WHERE  name = '" + message.member.user.username + "' LIMIT 1";
+    query = "SELECT * FROM levelsystem WHERE  name = '" + username + "' LIMIT 1";
     try 
     {   
         row = await pool.query(query);
@@ -44,9 +44,9 @@ const printStats = async (message) =>
     catch(e) { message.channel.send("Something went wrong (printStats): \n" + e); }
 }
 
-const updateValues = async (message) =>
+const updateValues = async (message, username) =>
 {
-    query = "SELECT * FROM levelsystem WHERE name = '" + message.member.user.username + "' LIMIT 1";
+    query = "SELECT * FROM levelsystem WHERE name = '" + username + "' LIMIT 1";
     try 
     {   
         row = await pool.query(query);
@@ -64,23 +64,24 @@ bot.on("message", message =>
 
     ( async () => 
     {   
-        await updateValues(message);
+        username = message.member.user.username.replace(/[^a-zA-Z0-9]/g, "");
+        await updateValues(message, username);
 
         if(level != undefined) 
         {
             xp++;
-            query = "UPDATE levelsystem SET xp = " + xp + " WHERE name = '" + message.member.user.username + "'";
-            editDB(message, query)
+            query = "UPDATE levelsystem SET xp = " + xp + " WHERE name = '" + username + "'";
+            editDB(message, query, username)
         }
         if(level != undefined && xp >= xpNeeded) 
         {
             level++;
             message.channel.send("@" + message.member.user.tag + " is now level " + level + "!");
-            query = "UPDATE levelsystem SET level = " + level + " WHERE name = '" + message.member.user.username + "'";
-            editDB(message, query);
+            query = "UPDATE levelsystem SET level = " + level + " WHERE name = '" + username + "'";
+            editDB(message, query, username);
             xpNeeded = 50 * level + level * level;
-            query = "UPDATE levelsystem SET xpNeeded = " + xpNeeded + " WHERE name = '" + message.member.user.username + "'";
-            editDB(message, query);
+            query = "UPDATE levelsystem SET xpNeeded = " + xpNeeded + " WHERE name = '" + username + "'";
+            editDB(message, query, username);
         }
 
         if(message.channel.name != "bot-channel") return;
@@ -91,12 +92,12 @@ bot.on("message", message =>
             switch(args[0])
             {
                 case "stats":
-                    printStats(message);
+                    printStats(message, username);
                     break;
 
                 case "join":
-                    query = "INSERT INTO levelsystem VALUES ('" + message.member.user.username + "', 0, 0, 1)"
-                    editDB(message, query);
+                    query = "INSERT INTO levelsystem VALUES ('" + username + "', 0, 0, 1)"
+                    editDB(message, query, username);
                     message.channel.send("You are now able to earn xp and level up!");
                     break;
 
@@ -107,9 +108,10 @@ bot.on("message", message =>
                         break;
                     }
                     query = "DELETE FROM levelsystem WHERE name = '" + args[1] + "'"; 
-                    editDB(message, query);
+                    editDB(message, query, username);
                     message.channel.send("Deleted " + args[1]);
                     break;
+                    
                 case "query":
                     if(!message.member.roles.cache.find(r => r.name === "Alpha")) 
                     {
@@ -120,7 +122,7 @@ bot.on("message", message =>
                     {
                         query = query + " " + args[i];
                     }
-                    editDB(message, query);
+                    editDB(message, query, username);
                     message.channel.send("Query was send!");
                     break;
             }
