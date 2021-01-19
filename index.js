@@ -152,7 +152,8 @@ bot.on("message", message =>
                     xpGot = Math.random() * 30;
                     xpGot = Math.round(xpGot);
                     message.channel.send("You got " + xpGot + " xp!");
-                    query = "UPDATE levelsystem SET xp = " + xp + xpGot + " WHERE name = '" + username + "'";
+                    xp = xp + xpGot;
+                    query = "UPDATE levelsystem SET xp = " + xp + " WHERE name = '" + username + "'";
                     editDB(message, query); 
 
             }
