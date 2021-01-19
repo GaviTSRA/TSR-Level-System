@@ -22,7 +22,7 @@ function UPDATE()
 {
     if (new Date().getHours() == 0 && new Date().getMinutes() == 0 && new Date().getSeconds() == 0)
     {
-        query = "UPDATE levelsystem SET giftReady = 'true' WHERE giftReady = 'false'";
+        query = "UPDATE levelsystem SET giftReady = true";
         editDB(undefined, query);
     }
 }
@@ -147,12 +147,12 @@ bot.on("message", message =>
                         message.channel.send("Your gift is not ready!");
                         break;
                     }
-                    query = "UPDATE levelsystem SET qiftReady = false WHERE name = '" + username + "'";
+                    query = "UPDATE levelsystem SET giftReady = false WHERE name = '" + username + "'";
                     editDB(message, query);
                     xpGot = Math.random() * 30;
+                    xpGot = Math.round(xpGot);
                     message.channel.send("You got " + xpGot + " xp!");
-                    xpGot += xp;
-                    query = "UPDATE levelsystem SET xp = " + xpGot + " WHERE name = '" + username + "'";
+                    query = "UPDATE levelsystem SET xp = " + xp + xpGot + " WHERE name = '" + username + "'";
                     editDB(message, query); 
 
             }
