@@ -8,6 +8,7 @@ const bot = new Discord.Client();
 var level;
 var xp;
 var xpNeeded;
+var giftReady;
     
 bot.on("ready", () => 
 {
@@ -16,16 +17,24 @@ bot.on("ready", () =>
     pool.getConnection();
 });
 
-update = setInterval(UPDATE, 60);
+update = setInterval(UPDATE, 100);
 function UPDATE()
 {
-    if (new Date().getHours() == 0 && new Date().getMinutes() == 0 && new Date().getSeconds() == 0 && new Date().getMilliseconds() == 0) return;
+    if (new Date().getHours() == 0 && new Date().getMinutes() == 0 && new Date().getSeconds() == 0)
+    {
+        query = "UPDATE levelsystem SET giftReady = 'true' WHERE giftReady = 'false'";
+        editDB(undefined, query);
+    }
 }
 
-const editDB = async (message, query, username) =>
+const editDB = async (message, query) =>
 {
     try { await pool.query(query); }
-    catch(e) { message.channel.send("Something went wrong (editDB): \nQuery: " + query + "\n" + e); }
+    catch(e) 
+    { 
+        if(message != undefined) message.channel.send("Something went wrong (editDB): \nQuery: " + query + "\n" + e);
+        else console.log(e);
+    }
 }
 
 const printStats = async (message, username) =>
@@ -39,7 +48,7 @@ const printStats = async (message, username) =>
             message.channel.send("You are not part of the levelsystem - do >>join to join the levelsystem!")
             return;
         }
-        message.channel.send("Name: " + row[0][0].name + "\nXP: " + row[0][0].xp + "\nLevel: " + row[0][0].level + "\nXP until next level up: " + row[0][0].xpNeeded);
+        message.channel.send("Name: " + row[0][0].name + "\nXP: " + row[0][0].xp + "\nLevel: " + row[0][0].level + "\nXP needed for next level up: " + row[0][0].xpNeeded + "\nGift ready: " + row[0][0].giftReady);
     }
     catch(e) { message.channel.send("Something went wrong (printStats): \n" + e); }
 }
@@ -54,6 +63,7 @@ const updateValues = async (message, username) =>
         level = row[0][0].level;
         xp = row[0][0].xp;
         xpNeeded = row[0][0].xpNeeded;
+        giftReady = row[0][0].giftReady;
     }
     catch(e) { message.channel.send("Something went wrong (updateValues): \nQuery: " + query + "\n" + e); }
 }
@@ -71,17 +81,17 @@ bot.on("message", message =>
         {
             xp++;
             query = "UPDATE levelsystem SET xp = " + xp + " WHERE name = '" + username + "'";
-            editDB(message, query, username)
+            editDB(message, query)
         }
         if(level != undefined && xp >= xpNeeded) 
         {
             level++;
             message.channel.send("@" + message.member.user.tag + " is now level " + level + "!");
             query = "UPDATE levelsystem SET level = " + level + " WHERE name = '" + username + "'";
-            editDB(message, query, username);
+            editDB(message, query);
             xpNeeded = 50 * level + level * level;
             query = "UPDATE levelsystem SET xpNeeded = " + xpNeeded + " WHERE name = '" + username + "'";
-            editDB(message, query, username);
+            editDB(message, query);
         }
 
         if(message.channel.name != "bot-channel") return;
@@ -97,7 +107,7 @@ bot.on("message", message =>
 
                 case "join":
                     query = "INSERT INTO levelsystem VALUES ('" + username + "', 0, 0, 1)"
-                    editDB(message, query, username);
+                    editDB(message, query);
                     message.channel.send("You are now able to earn xp and level up!");
                     break;
 
@@ -108,7 +118,7 @@ bot.on("message", message =>
                         break;
                     }
                     query = "DELETE FROM levelsystem WHERE name = '" + args[1] + "'"; 
-                    editDB(message, query, username);
+                    editDB(message, query);
                     message.channel.send("Deleted " + args[1]);
                     break;
                     
@@ -122,9 +132,29 @@ bot.on("message", message =>
                     {
                         query = query + " " + args[i];
                     }
-                    editDB(message, query, username);
+                    editDB(message, query);
                     message.channel.send("Query was send!");
                     break;
+
+                case "gift":
+                    if(level < 2)
+                    {
+                        message.channel.send("You need to be level 2 for this!");
+                        break;
+                    }
+                    if(!giftReady)
+                    {
+                        message.channel.send("Your gift is not ready!");
+                        break;
+                    }
+                    query = "UPDATE levelsystem SET qiftReady = false WHERE name = '" + username + "'";
+                    editDB(message, query);
+                    xpGot = Math.random() * 30;
+                    message.channel.send("You got " + xpGot + " xp!");
+                    xpGot += xp;
+                    query = "UPDATE levelsystem SET xp = " + xpGot + " WHERE name = '" + username + "'";
+                    editDB(message, query); 
+
             }
         }
     }) ()
