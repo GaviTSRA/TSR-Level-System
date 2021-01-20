@@ -106,7 +106,7 @@ bot.on("message", message =>
                     break;
 
                 case "join":
-                    query = "INSERT INTO levelsystem VALUES ('" + username + "', 0, 0, 1)"
+                    query = "INSERT INTO levelsystem VALUES ('" + username + "', 0, 0, 1, 1)"
                     editDB(message, query);
                     message.channel.send("You are now able to earn xp and level up!");
                     break;
