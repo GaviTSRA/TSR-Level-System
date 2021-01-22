@@ -45,7 +45,7 @@ const printStats = async (message, username) =>
         row = await pool.query(query);
         if(row[0][0] == undefined) 
         {
-            message.channel.send("You are not part of the levelsystem - do >>join to join the levelsystem!")
+            message.channel.send(username + " is not part of the levelsystem - use >>join to join the levelsystem!")
             return;
         }
         message.channel.send("Name: " + row[0][0].name + "\nXP: " + row[0][0].xp + "\nLevel: " + row[0][0].level + "\nXP needed for next level up: " + row[0][0].xpNeeded + "\nGift ready: " + row[0][0].giftReady);
