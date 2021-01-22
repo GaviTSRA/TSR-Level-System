@@ -102,7 +102,9 @@ bot.on("message", message =>
             switch(args[0])
             {
                 case "stats":
-                    printStats(message, username);
+                    if (args[1] == undefined) uName = username;
+                    else uName = args[1]; 
+                    printStats(message, uName);
                     break;
 
                 case "join":
