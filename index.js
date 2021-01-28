@@ -120,17 +120,6 @@ bot.on("message", message =>
                     editDB(message, query);
                     message.channel.send("You are now able to earn xp and level up!");
                     break;
-
-                case "delete":
-                    if(!message.member.roles.cache.find(r => r.name === "Alpha")) 
-                    {
-                        message.channel.send("You are not allowed to do that!");
-                        break;
-                    }
-                    query = "DELETE FROM levelsystem WHERE name = '" + args[1] + "'"; 
-                    editDB(message, query);
-                    message.channel.send("Deleted " + args[1]);
-                    break;
                     
                 case "query":
                     if(!message.member.roles.cache.find(r => r.name === "Alpha")) 
