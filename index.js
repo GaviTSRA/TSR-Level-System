@@ -86,7 +86,7 @@ bot.on("message", message =>
         if(level != undefined && xp >= xpNeeded) 
         {
             level++;
-            message.channel.send("@" + message.member.user.tag + " is now level " + level + "!");
+            message.channel.send(message.member.user.tag + " is now level " + level + "!");
             query = "UPDATE levelsystem SET level = " + level + " WHERE name = '" + username + "'";
             editDB(message, query);
             xpNeeded = 50 * level + level * level;
@@ -103,7 +103,14 @@ bot.on("message", message =>
             {
                 case "stats":
                     if (args[1] == undefined) uName = username;
-                    else uName = args[1]; 
+                    else
+                    {
+                        for(i = 1; i < args.length; i++)
+                        {
+                            uName = uName + "" + args[i];
+                        }
+                    }
+                    uName = uName.replace(/[^a-zA-Z0-9]/g, ""); 
                     printStats(message, uName);
                     break;
 
