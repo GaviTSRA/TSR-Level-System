@@ -102,6 +102,7 @@ bot.on("message", message =>
             switch(args[0])
             {
                 case "stats":
+                    uName = "";
                     if (args[1] == undefined) uName = username;
                     else
                     {
