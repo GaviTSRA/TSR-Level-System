@@ -86,7 +86,6 @@ bot.on("message", message =>
 	username = "";
         username = message.member.user.username.replace(/[^a-zA-Z0-9]/g, "");
         await updateValues(message, username);
-	message.channel.send(username + ", " + xp + "; " + xpNeeded + ", " + level)
         if(level != undefined) 
         {
             xp++;
