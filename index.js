@@ -74,6 +74,10 @@ bot.on("message", message =>
 
     ( async () => 
     {   
+	xp = 0;
+	xpNeeded = 52;
+	level = 0;
+	username = "";
         username = message.member.user.username.replace(/[^a-zA-Z0-9]/g, "");
         await updateValues(message, username);
 	message.channel.send(username + ", " + xp + "; " + xpNeeded + ", " + level)
@@ -119,6 +123,7 @@ bot.on("message", message =>
                     query = "INSERT INTO levelsystem VALUES ('" + username + "', 0, 0, 1, 1)"
                     editDB(message, query);
                     message.channel.send("You are now able to earn xp and level up!");
+		    await updateValues(message, username);
                     break;
                     
                 case "query":
