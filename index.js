@@ -59,7 +59,13 @@ const updateValues = async (message, username) =>
     try 
     {   
         row = await pool.query(query);
-        if (row[0][0] == undefined) return;
+        if (row[0][0] == undefined)
+	{
+		xp = 0;
+		xpNeeded = 52;
+		level = 0;
+		return;
+	}
         level = row[0][0].level;
         xp = row[0][0].xp;
         xpNeeded = row[0][0].xpNeeded;
